@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+      "module": "CommonJS",
+      "target": "ES2020",
+      "lib": ["ES2020"],
+      "strict": true,
+      "esModuleInterop": true,
+      "skipLibCheck": true,
+      "forceConsistentCasingInFileNames": true
+    },
+    "include": ["./**/*.ts"],   // Include all .ts files in the project root and subdirectories
+    "exclude": ["node_modules"]
+}
+  
