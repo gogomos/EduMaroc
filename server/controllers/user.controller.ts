@@ -6,6 +6,7 @@ import jwt, { Secret } from "jsonwebtoken";
 import ejs from "ejs";
 import path from "path";
 import sendMail from "../utils/sendMail";
+import { sendToken } from './../utils/jwt';
 require("dotenv").config();
 
 //register user
@@ -111,5 +112,47 @@ export const createActivationToken = (user: any): IActivationToken => {
   } catch (error: any) {
     return next(new ErrorHandler(error.message, 400));
   }
-})
+});
 
+//login user
+
+interface ILoginRequest {
+  email: string;
+  password: string;
+}
+
+export const loginUser = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { email, password } = req.body as ILoginRequest;
+    if (!email || !password) {
+      return next(new ErrorHandler("Please Enter Email & Password", 400));
+    }
+    const user = await userModel.findOne({ email }).select("+password");
+
+    if (!user) {
+      return next(new ErrorHandler("Invalid Email or Password", 400));
+    }
+    const isPasswordMatched = await user.comparePassword(password);
+    if (!isPasswordMatched) {
+      return next(new ErrorHandler("Invalid Email or Password", 400));
+    }
+    sendToken(user, 200, res);
+  } catch (error: any) {
+    return next(new ErrorHandler(error.message, 400));
+  }
+});
+
+export const logoutUser = (req: Request, res: Response, next: NextFunction) => {
+  try {
+    res.cookie("accessToken", "", {maxAge: 1});
+    res.cookie("refreshToken", "", {maxAge: 1});
+    res.status(200).json({
+      success: true,
+      message: "Logged out successfully",
+    })
+  } catch (error: any) {
+    return next(new ErrorHandler(error.message, 400));
+  }
+}
+ 
