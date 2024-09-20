@@ -10,6 +10,7 @@ import { sendToken } from './../utils/jwt';
 import { redis } from "../utils/redis";
 import { accessTokenOptions, refreshTokenOptions } from "../utils/jwt";
 import { getUserById } from "../services/user.service";
+import cloudinary from "cloudinary";
 require("dotenv").config();
 
 //register user
@@ -238,9 +239,10 @@ interface IUpdateUserInfo {
 }
 
 export const updateUserInfo = CatchAsyncError(
-  async(res: Response, req: Request, next: NextFunction) => {
+  async(req: Request, res: Response,  next: NextFunction) => {
     try {
-      const { name, email } = req.body as IUpdateUserInfo;
+      const {name, email } = req.body as IUpdateUserInfo;
+      // console.log(name);
       const userId = req.user?._id;
       const user = await userModel.findById(userId);
       if (email && user) {
@@ -263,4 +265,97 @@ export const updateUserInfo = CatchAsyncError(
       return next(new ErrorHandler(error.message, 400));
     }
   }
-)
+);
+
+// update user password
+
+interface IUpdateUserPasswrd {
+  oldPassword: string;
+  newPassword: string;
+}
+
+export const updateUserPassword = CatchAsyncError(
+  async (req : Request, res: Response, next: NextFunction) => {
+    try {
+      const { oldPassword, newPassword } = req.body as IUpdateUserPasswrd;
+      if(!oldPassword || !newPassword) {
+        return next(new ErrorHandler("Please provide old and new password", 400));
+      }
+      const userId = req.user?._id;
+      const user = await userModel.findById(userId).select("+password");
+      if (user?.password === undefined) {
+        return next(new ErrorHandler("invalid user", 400));
+      }
+      if (!user) {
+        return next(new ErrorHandler("User not found", 404));
+      }
+      const isMatch = await user?.comparePassword(oldPassword);
+      if (!isMatch) {
+        return next(new ErrorHandler("Old password is incorrect", 400));
+      }
+      user.password = newPassword;
+      await user.save();
+      await redis.set(userId, JSON.stringify(user));
+      // sendToken(user, 200, res); i nedd to add this function
+      res.status(200).json({
+        success: true,
+        user
+      })
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+); 
+
+// update user avatar
+interface IUpdateUserAvatar {
+  avatar: string;
+}
+export const updateUserAvatar = CatchAsyncError(
+  async (req : Request, res: Response, next: NextFunction) => {
+    try {
+      const { avatar } = req.body as IUpdateUserAvatar;
+      const userId = req.user?._id;
+      const user = await userModel.findById(userId);
+      if (!user) {
+        return next(new ErrorHandler("User not found", 404));
+      }
+      if (avatar && user) {
+        // if there is an avatar
+        if(user?.avatar?.public_id) {
+          //delete the old avatar 
+          await cloudinary.v2.uploader.destroy(user?.avatar?.public_id);
+          // create new one 
+          const myCloud = await cloudinary.v2.uploader.upload(avatar, {
+            folder: "avatars",
+            width: 150,
+          });
+          user.avatar = {
+            public_id: myCloud.public_id,
+            url: myCloud.secure_url,
+          };
+        } else {
+          const myCloud = await cloudinary.v2.uploader.upload(avatar, {
+            folder: "avatars",
+            width: 150,
+          });
+          user.avatar = {
+            public_id: myCloud.public_id,
+            url: myCloud.secure_url,
+          };
+          
+        }
+      }
+      
+      await user.save();
+      await redis.set(userId, JSON.stringify(user));
+      res.status(200).json({
+        success: true,
+        message: "Avatar updated successfully",
+      })
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
+
