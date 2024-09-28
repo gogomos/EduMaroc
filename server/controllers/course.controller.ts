@@ -7,6 +7,10 @@ import cloudinary from "cloudinary";
 import { redis } from "../utils/redis";
 import { createCourse } from "../services/course.service";
 import mongoose from "mongoose";
+import sendMail  from "../utils/sendMail";
+import ejs from "ejs";
+import path from "path";
+import { title } from "process";
 require("dotenv").config();
 
 export const uploadCourse = CatchAsyncError(
@@ -226,6 +230,28 @@ export const addAnswer = CatchAsyncError(
 
       question.questionReplies.push(answerData);
       await course?.save();
+      if(req.user?._id === question.user._id){
+        //create a notification
+      } else {
+        const data = {
+          name: question.user.name,
+          title: courseContent.title,
+        };
+        const html = await ejs.renderFile(
+          path.join(__dirname, "../mails/question-reply.ejs"),
+          data
+        );
+        try {
+          await sendMail({
+            email: question.user.email,
+            subject: "Reply to your question",
+            template: "question-reply",
+            data,
+          });
+        } catch (error: any) {
+          return next(new ErrorHandler(error.message, 500));
+        }
+      }
       res.status(200).json({
         success: true,
         message: "Answer added successfully",
@@ -235,3 +261,96 @@ export const addAnswer = CatchAsyncError(
       return next(new ErrorHandler(error.message, 500));
     }
   });
+
+  // add review in course
+interface IAddReviewData {
+  review: string;
+  courseId : string;
+  rating : number;
+  userId: string;
+}
+
+export const addReview = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userCourseList = req.user?.courses;
+      console.log("hello")
+      console.log(userCourseList);
+      const courseId = req.params.id;
+      
+      // check if user already reviewed the course
+      const courseIdExists = userCourseList?.some((course: any) => {
+        return course._id.toString() === courseId;
+      });
+
+      if (!courseIdExists) {
+        return next(
+          new ErrorHandler("You are not enrolled in this course", 404)
+        );
+      }
+      const course = await CourseModel.findById(courseId);
+      const {review, rating} = req.body as IAddReviewData;
+      const reviewData: any = {
+        user: req.user,
+        review,
+        rating
+      };
+      course?.reviews.push(reviewData);
+      let avg  = 0;
+      course?.reviews.forEach((review: any) => {
+        avg += review.rating;
+      })
+      if (course) {
+        course.rating = avg / course.reviews.length;
+      }
+      await course?.save();
+
+      const notification = {
+        title: "New Review",
+        message: `${req.user?.name} added a review in ${course?.name}`,
+      }
+      res.status(200).json({
+        success: true,
+        message: "Review added successfully",
+        course,
+      })
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  }
+);
+
+// add reply in review
+interface IAddReviewData {
+  comment: string;
+  courseId : string;
+  reviewId: String;
+}
+export const addReplyToReview = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const {comment, courseId, reviewId} = req.body as IAddReviewData;
+      const course = await CourseModel.findById(courseId);
+      if (!course) {
+        return next(new ErrorHandler("Course not found", 404));
+      }
+      const review = course?.reviews?.find((review: any) => review._id.toString() === reviewId);
+      if (!review) {
+        return next(new ErrorHandler("Review not found", 404));
+      }
+      const replyData: any = {
+        user: req.user,
+        comment
+      };
+      course.reviews.push(replyData);
+      await course?.save();
+      res.status(200).json({
+        success: true,
+        message: "Reply added successfully",
+        course,
+      })
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  }
+)

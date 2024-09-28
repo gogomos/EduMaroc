@@ -1,74 +1,9 @@
-<!-- <!DOCTYPE html>
-<html>
-<head>
-	<title>Activate Your Account</title>
-	<style>
-		body {
-			font-family: Arial, sans-serif;
-			background-color: #f2f2f2;
-		}
-		.container {
-			width: 600px;
-			margin: 40px auto;
-			background-color: #fff;
-			padding: 20px;
-			border: 1px solid #ddd;
-			border-radius: 10px;
-			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-		}
-		.header {
-			background-color: #0072d5d4;
-			color: #fff;
-			padding: 10px;
-			border-bottom: 1px solid #ddd;
-		}
-		.header h1 {
-			margin: 0;
-			font-size: 24px;
-		}
-		.content {
-			padding: 20px;
-		}
-		.content p {
-			margin-bottom: 20px;
-		}
-		.button {
-			background-color: #333;
-			color: #fff;
-			padding: 10px 20px;
-			border: none;
-			border-radius: 5px;
-			cursor: pointer;
-		}
-		.button:hover {
-			background-color: #444;
-		}
-        #activation-code {
-            font-size: 24px;
-            font-weight: bold;
-        }
-	</style>
-</head>
-<body>
-	<div class="container">
-		<div class="header">
-			<h1>Activate Your Account</h1>
-		</div>
-		<div class="content">
-			<p>Dear ,</p>
-			<p>Thank you for signing up for EduMaroc! To complete your registration, we need to verify your email address. Please use the code below to activate your account:</p>
-			<p id="activation-code"><strong>></strong></p>
-			<p>If you have any issues or concerns, please don't hesitate to reach out to our support team.</p>
-		</div>
-	</div>
-</body>
-</html> -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Activate Your EduMaroc Account</title>
+    <title>Your Question Has Been Answered - EduMaroc</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
         
@@ -116,17 +51,16 @@
             margin-bottom: 20px;
             line-height: 1.6;
         }
-        .activation-code {
+        .highlight-box {
             background-color: #f0f7ff;
-            border: 2px dashed #4a90e2;
+            border-left: 4px solid #4a90e2;
             border-radius: 8px;
             padding: 20px;
-            text-align: center;
-            font-size: 32px;
-            font-weight: 600;
-            color: #4a90e2;
-            letter-spacing: 4px;
             margin-bottom: 30px;
+        }
+        .highlight-box h2 {
+            margin-top: 0;
+            color: #4a90e2;
         }
         .button {
             display: inline-block;
@@ -158,25 +92,27 @@
             .content {
                 padding: 30px 20px;
             }
-            .activation-code {
-                font-size: 24px;
-            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>Welcome to EduMaroc!</h1>
+            <h1>Your Question Has Been Answered!</h1>
         </div>
         <div class="content">
-            <p>Dear <%= user.name %>,</p>
-            <p>Thank you for joining EduMaroc, your gateway to quality online education in Morocco. We're excited to have you on board! To get started, please activate your account using the code below:</p>
-            <div class="activation-code"><%= activationCode %></div>
-            <p>Once your account is activated, you'll have access to a world of learning opportunities tailored for Moroccan students. Explore our courses, connect with expert instructors, and take the next step in your educational journey.</p>
-            <p>If you have any questions or need assistance, our support team is here to help. Just reply to this email or click the button below to reach out to us.</p>
+            <p>Dear <%= name %>,</p>
+            <p>Great news! Your question about the course "<%= title %>" has been answered by one of our expert instructors. We're excited for you to continue your learning journey with this new insight.</p>
+            <div class="highlight-box">
+                <h2>What's Next?</h2>
+                <p>1. Review the answer to your question</p>
+                <p>2. Continue with your course material</p>
+                <p>3. Engage in discussions with fellow learners</p>
+            </div>
+            <p>Remember, asking questions is a crucial part of the learning process. We encourage you to keep exploring and inquiring as you progress through your courses on EduMaroc.</p>
+            <p>If you have any more questions or need further clarification, don't hesitate to reach out. Our instructors and support team are here to help you succeed.</p>
             <p style="text-align: center;">
-                <a href="mailto:support@edumaroc.com" class="button">Contact Support</a>
+                <a href="https://edumaroc.com/my-courses" class="button">Go to My Courses</a>
             </p>
         </div>
         <div class="footer">

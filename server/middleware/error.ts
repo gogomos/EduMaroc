@@ -15,7 +15,6 @@ export const ErrorMiddleware = (err: any, req: Request, res: Response, next: Nex
     if (err.code === 11000) {
         const message = `Duplicate ${Object.keys(err.keyValue)} entered`;
         err = new ErrorHandler(message, 400);
-
     }
 
     //jwt error
