@@ -7,6 +7,7 @@ interface INotification extends Document {
     title : string;
     message: string;
     status: string;
+    createdAt: Date;
 }
 
 const notificationSchema = new Schema<INotification>({

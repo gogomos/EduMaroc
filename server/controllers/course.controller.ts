@@ -10,7 +10,8 @@ import mongoose from "mongoose";
 import sendMail  from "../utils/sendMail";
 import ejs from "ejs";
 import path from "path";
-import { title } from "process";
+import NotificationModel from "../models/notificationModel";
+import {getAllCoursesService} from "../services/course.service";
 require("dotenv").config();
 
 export const uploadCourse = CatchAsyncError(
@@ -182,6 +183,11 @@ export const addQuestion = CatchAsyncError(
       };
 
       courseContent.questions.push(questionData);
+      await NotificationModel.create({
+        userId: req.user?._id,
+        title: "new Question Received",
+        message: `You have new question in ${courseContent.title}`,
+    });
       await course?.save();
       res.status(200).json({
         success: true,
@@ -232,6 +238,11 @@ export const addAnswer = CatchAsyncError(
       await course?.save();
       if(req.user?._id === question.user._id){
         //create a notification
+        await NotificationModel.create({
+          userId: req.user?._id,
+          title: "New Answer",
+          message: `You have new answer in ${courseContent.title}`,
+        })
       } else {
         const data = {
           name: question.user.name,
@@ -356,4 +367,14 @@ export const addReplyToReview = CatchAsyncError(
       return next(new ErrorHandler(error.message, 500));
     }
   }
-)
+);
+
+// get all courses ---only for admin
+
+export const getAllCoursesAdmin= CatchAsyncError( async(req: Request, res: Response, next: NextFunction) => {
+  try {
+    getAllCoursesService(res);
+  } catch (error: any) {
+    return next(new ErrorHandler(error.message, 400));
+  }
+})

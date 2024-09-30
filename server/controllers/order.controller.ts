@@ -7,7 +7,7 @@ import ErrorHandler from "../utils/ErrorHandler";
 import path from "path";
 import sendMail from "../utils/sendMail";
 import ejs from "ejs";
-import { newOrder } from "../services/order.service";
+import { getAllOrdersService, newOrder } from "../services/order.service";
 import { privateDecrypt } from "crypto";
 import NotificationModel from "../models/notificationModel";
 
@@ -42,7 +42,7 @@ export const createOrder = CatchAsyncError(
             newOrder(data, res, next);
             const mailData = {
                 order: {
-                    _id: course.id.slice(0,6),// i nshould ubder stand thsin
+                    _id: course.id.slice(0,6),// if i wan t to accsess to id in data base as a string i use .id 
                     name: course.name,
                     price: course.price,
                     date : new Date().toLocaleDateString('en-US',{year: 'numeric', month: 'long', day: 'numeric'}),
@@ -75,9 +75,25 @@ export const createOrder = CatchAsyncError(
                 title: "new-order",
                 message: `You have successfully enrolled in ${course?.name}`,
             });
-            course.purchased ? course.purchased += 1 : course.purchased;
+            // course.purchased ? course.purchased += 1 : course.purchased;
+            if (course.purchased || course.purchased === 0) {
+                course.purchased += 1
+            }else {
+                course.purchased = 0;
+            }
             await course.save();
         } catch (error: any) {
             return next(new ErrorHandler(error.message, 500));
         }
     });
+
+
+    // get all orders ---only for admin
+
+export const getAllOrders = CatchAsyncError( async(req: Request, res: Response, next: NextFunction) => {
+    try {
+      getAllOrdersService(res);
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  })
