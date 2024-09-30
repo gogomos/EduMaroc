@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation - EduMaroc</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+        
+        body {
+            font-family: 'Poppins', Arial, sans-serif;
+            background-color: #f4f7f9;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background-color: #ffffff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background-color: #4a90e2;
+            color: #ffffff;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 600;
+        }
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: 0;
+            right: 0;
+            height: 40px;
+            background-color: #ffffff;
+            clip-path: polygon(0 0, 100% 0, 50% 100%);
+        }
+        .content {
+            padding: 40px 30px;
+            color: #333333;
+        }
+        .content p {
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        .order-details {
+            background-color: #f0f7ff;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        .order-details h2 {
+            margin-top: 0;
+            color: #4a90e2;
+            font-size: 24px;
+        }
+        .order-details table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .order-details th, .order-details td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .order-details th {
+            font-weight: 600;
+            color: #4a90e2;
+        }
+        .button {
+            display: inline-block;
+            background-color: #4a90e2;
+            color: #ffffff;
+            padding: 12px 24px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+        .button:hover {
+            background-color: #3a7bc8;
+        }
+        .footer {
+            background-color: #f0f7ff;
+            padding: 20px;
+            text-align: center;
+            font-size: 14px;
+            color: #666666;
+        }
+        @media only screen and (max-width: 600px) {
+            .container {
+                margin: 20px;
+            }
+            .header {
+                padding: 20px;
+            }
+            .content {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Order Confirmation</h1>
+        </div>
+        <div class="content">
+            <p>Dear Valued Student,</p>
+            <p>Thank you for your purchase on EduMaroc! We're excited to confirm that your order has been successfully processed. Here are the details of your order:</p>
+            <div class="order-details">
+                <h2>Order Summary</h2>
+                <table>
+                    <tr>
+                        <th>Order ID:</th>
+                        <td>#<%= order._id %></td>
+                    </tr>
+                    <tr>
+                        <th>Course:</th>
+                        <td><%= order.name %></td>
+                    </tr>
+                    <tr>
+                        <th>Price:</th>
+                        <td><%= order.price %> MAD</td>
+                    </tr>
+                    <tr>
+                        <th>Date:</th>
+                        <td><%= order.date %></td>
+                    </tr>
+                </table>
+            </div>
+            <p>You now have full access to the course materials. We recommend starting your learning journey as soon as possible to make the most of your purchase.</p>
+            <p>If you have any questions about your order or need assistance accessing your course, please don't hesitate to contact our support team.</p>
+            <p style="text-align: center;">
+                <a href="https://edumaroc.com/my-courses" class="button">Start Learning Now</a>
+            </p>
+            <p>Thank you for choosing EduMaroc for your educational needs. We're committed to helping you achieve your learning goals and advance your career.</p>
+            <p>Best regards,<br>The EduMaroc Team</p>
+        </div>
+        <div class="footer">
+            <p>&copy; 2024 EduMaroc. All rights reserved.</p>
+            <p>123 Education Street, Casablanca, Morocco</p>
+        </div>
+    </div>
+</body>
+</html>

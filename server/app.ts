@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import { ErrorMiddleware } from "./middleware/error";
 import userRouter from "./routes/user.route";
 import courseRouter from "./routes/course.route";
+import orderRouter from "./routes/order.route";
 app.use(express.json({limit: "50mb"}));
 
 //cookie parser
@@ -18,6 +19,8 @@ app.use(cors({
 //  routes
 app.use("/api/v1", userRouter);
 app.use("/api/v1", courseRouter);
+app.use("/api/v1", orderRouter);
+
 // testing api 
 app.get("/test", (req: Request, res: Response, next: NextFunction ) => {
     res.status(200).json({
@@ -25,7 +28,6 @@ app.get("/test", (req: Request, res: Response, next: NextFunction ) => {
         message:"API is working",
     })
 });
-
 //unknown route
 
 app.all('*', (req: Request, res: Response, next: NextFunction) => {
